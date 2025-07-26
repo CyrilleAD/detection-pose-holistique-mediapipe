@@ -1,0 +1,14 @@
+# Dépendances pour le projet de Détection de Pose Holistique
+# Par Dady Akrou Cyrille - Data Scientist
+
+# MediaPipe pour la détection de pose, visage et mains
+mediapipe>=0.10.0
+
+# OpenCV pour la capture vidéo et l'affichage
+opencv-python>=4.8.0
+
+# NumPy (généralement installé avec OpenCV mais on s'assure)
+numpy>=1.21.0
+
+# Matplotlib pour les visualisations (optionnel)
+matplotlib>=3.5.0
