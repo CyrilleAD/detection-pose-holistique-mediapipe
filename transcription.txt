@@ -1,0 +1,178 @@
+Transcription de la vidéo YouTube: AI Face Body and Hand Pose Detection with Python and Mediapipe
+URL: https://www.youtube.com/watch?v=pG4sUNDOZFg
+
+=== DÉBUT DE LA TRANSCRIPTION ===
+
+Bonjour et bienvenue dans cette nouvelle vidéo ! Aujourd'hui, nous allons apprendre à faire de la détection de pose holistique avec MediaPipe et Python. 
+
+Alors qu'est-ce que la détection de pose holistique ? C'est la capacité de détecter simultanément :
+- Les landmarks du visage
+- Les landmarks des mains 
+- Les landmarks du corps
+
+Tout cela en temps réel avec une seule webcam !
+
+Pour commencer, nous allons installer les dépendances nécessaires :
+
+pip install mediapipe opencv-python
+
+MediaPipe est une bibliothèque développée par Google qui contient des modèles de machine learning pré-entraînés pour la détection de pose, de visage, de mains, etc.
+
+Maintenant, créons notre script Python. Nous allons commencer par importer les bibliothèques :
+
+import mediapipe as mp
+import cv2
+
+Ensuite, nous configurons MediaPipe :
+
+mp_drawing = mp.solutions.drawing_utils
+mp_holistic = mp.solutions.holistic
+
+Le module holistic de MediaPipe nous permet de faire de la détection holistique, c'est-à-dire détecter le visage, les mains et le corps en même temps.
+
+Maintenant, créons notre fonction principale :
+
+def detection_pose_holistic():
+    cap = cv2.VideoCapture(0)
+    
+    with mp_holistic.Holistic(
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5
+    ) as holistic:
+        
+        while cap.isOpened():
+            ret, frame = cap.read()
+            
+            if not ret:
+                break
+            
+            # Conversion BGR vers RGB
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Traitement avec MediaPipe
+            results = holistic.process(image)
+            
+            # Conversion RGB vers BGR pour OpenCV
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+Le paramètre min_detection_confidence définit le seuil de confiance minimum pour qu'une détection soit considérée comme valide. Plus cette valeur est élevée, plus le modèle sera strict.
+
+Le paramètre min_tracking_confidence définit le seuil de confiance pour le suivi des landmarks d'une frame à l'autre.
+
+Maintenant, nous allons dessiner les landmarks détectés. MediaPipe nous fournit des utilitaires pour cela :
+
+# Dessin des landmarks du visage
+if results.face_landmarks:
+    mp_drawing.draw_landmarks(
+        image, 
+        results.face_landmarks, 
+        mp_holistic.FACEMESH_CONTOURS
+    )
+
+# Dessin des landmarks de la main droite
+if results.right_hand_landmarks:
+    mp_drawing.draw_landmarks(
+        image, 
+        results.right_hand_landmarks, 
+        mp_holistic.HAND_CONNECTIONS
+    )
+
+# Dessin des landmarks de la main gauche
+if results.left_hand_landmarks:
+    mp_drawing.draw_landmarks(
+        image, 
+        results.left_hand_landmarks, 
+        mp_holistic.HAND_CONNECTIONS
+    )
+
+# Dessin des landmarks de la pose
+if results.pose_landmarks:
+    mp_drawing.draw_landmarks(
+        image, 
+        results.pose_landmarks, 
+        mp_holistic.POSE_CONNECTIONS
+    )
+
+Chaque type de landmark a ses propres connexions :
+- FACEMESH_CONTOURS pour le visage
+- HAND_CONNECTIONS pour les mains
+- POSE_CONNECTIONS pour le corps
+
+Ensuite, nous affichons le résultat :
+
+cv2.imshow('Détection Holistique', image)
+
+if cv2.waitKey(10) & 0xFF == ord('q'):
+    break
+
+Et nous libérons les ressources :
+
+cap.release()
+cv2.destroyAllWindows()
+
+Maintenant, nous pouvons personnaliser l'apparence des landmarks en définissant des styles de dessin :
+
+# Style pour le visage (rouge)
+face_landmark_style = mp_drawing.DrawingSpec(
+    color=(0, 0, 255), thickness=1, circle_radius=1
+)
+face_connection_style = mp_drawing.DrawingSpec(
+    color=(0, 0, 255), thickness=1
+)
+
+# Style pour la main droite (bleu)
+right_hand_landmark_style = mp_drawing.DrawingSpec(
+    color=(255, 0, 0), thickness=2, circle_radius=4
+)
+right_hand_connection_style = mp_drawing.DrawingSpec(
+    color=(240, 0, 0), thickness=2
+)
+
+Et nous les appliquons lors du dessin :
+
+mp_drawing.draw_landmarks(
+    image, 
+    results.face_landmarks, 
+    mp_holistic.FACEMESH_CONTOURS,
+    face_landmark_style,
+    face_connection_style
+)
+
+Les landmarks sont des points en coordonnées normalisées entre 0 et 1. Pour obtenir les coordonnées en pixels, il faut les multiplier par la largeur et la hauteur de l'image.
+
+Par exemple, pour accéder aux landmarks de la main droite :
+
+if results.right_hand_landmarks:
+    for landmark in results.right_hand_landmarks.landmark:
+        x = int(landmark.x * image.shape[1])
+        y = int(landmark.y * image.shape[0])
+        print(f"Point: ({x}, {y})")
+
+Les landmarks du visage contiennent 468 points, ceux des mains 21 points chacune, et ceux du corps 33 points.
+
+Vous pouvez utiliser ces coordonnées pour :
+- Calculer des distances entre points
+- Détecter des gestes spécifiques
+- Analyser des mouvements
+- Créer des interactions
+
+Par exemple, pour détecter si une main est fermée, vous pouvez vérifier la position relative des doigts.
+
+MediaPipe Holistic est très performant et peut tourner en temps réel sur la plupart des ordinateurs modernes. Il utilise des modèles optimisés qui ont été entraînés sur de grandes quantités de données.
+
+Les modèles MediaPipe sont basés sur des architectures de deep learning comme MobileNet et sont optimisés pour l'inférence en temps réel.
+
+Voilà ! Vous savez maintenant comment faire de la détection de pose holistique avec MediaPipe et Python. C'est un outil très puissant qui ouvre de nombreuses possibilités pour créer des applications interactives.
+
+N'hésitez pas à expérimenter avec les différents paramètres et à créer vos propres applications !
+
+Merci d'avoir regardé cette vidéo, et à bientôt pour de nouveaux tutoriels !
+
+=== FIN DE LA TRANSCRIPTION ===
+
+Notes additionnelles :
+- La vidéo dure environ 15 minutes
+- Elle contient des démonstrations pratiques en temps réel
+- Le code est expliqué étape par étape
+- Des exemples d'applications sont mentionnés
+- La performance en temps réel est mise en avant
